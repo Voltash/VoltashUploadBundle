@@ -1,7 +1,7 @@
 {
     "name": "Voltash/UploadBundle",
     "description": "File upload bundle for Symfony2",
-    "keywords": ["crud", "generator", "adminBundle"],
+    "keywords": ["uploadbundle", "voltash"],
     "homepage": "http://elert.ru",
     "type": "symfony-bundle",
     "license": "MIT",
