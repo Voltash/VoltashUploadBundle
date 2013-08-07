@@ -1,0 +1,28 @@
+{
+    "name": "Voltash/UploadBundle",
+    "description": "File upload bundle for Symfony2",
+    "keywords": ["crud", "generator", "adminBundle"],
+    "homepage": "http://elert.ru",
+    "type": "symfony-bundle",
+    "license": "MIT",
+    "authors": [
+    {
+        "name": "Volodymyr Elert",
+        "email": "vova@elert.ru"
+    }
+],
+    "require": {
+        "symfony/framework-bundle": "~2.0",
+        "twig/twig":                "~1.5"
+},
+    "minimum-stability": "dev",
+    "autoload": {
+    "psr-0": { "Voltash\\UploadBundle": "" }
+},
+    "target-dir": "Voltash/UploadBundle",
+    "extra": {
+    "branch-alias": {
+        "dev-master": "2.2.x-dev"
+    }
+}
+}
