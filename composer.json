@@ -19,7 +19,6 @@
     "autoload": {
     "psr-0": { "Voltash\\UploadBundle": "" }
 },
-    "target-dir": "voltash-b",
     "extra": {
     "branch-alias": {
         "dev-master": "2.2.x-dev"
