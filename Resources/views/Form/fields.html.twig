@@ -1,0 +1,44 @@
+{% extends 'form_div_layout.html.twig' %}
+
+{% block fileUpload_widget %}
+    {% set type = type|default('hidden') %}
+    <input type="{{ type }}" {{ block('widget_attributes') }} value="{{ value }}" class="file_upload_field" />
+
+    {% include template with { name: name, value: value } %}
+
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+            var uploader{{ name }} = new plupload.Uploader({
+                runtimes : 'html5,flash,silverlight,html4',
+                browse_button : 'uploadFile_{{ name }}', // you can pass in id or DOM Element itself
+                container: 'container_{{ name }}',
+                max_file_size : '10mb',
+                url : '{{ path('file_upload_upload') }}',
+                multi_selection: false,
+                flash_swf_url : '{{ asset('bundles/fileupload/swf/plupload.flash.swf') }}',
+                silverlight_xap_url : '{{ asset('bundles/fileupload/swf/plupload.silverlight.xap') }}',
+                filters : [
+                    {title : "Image files", extensions : "{{ extensions }}"}
+                ],
+                multipart_params : {
+                    "type" : '{{ file_type }}',
+                    "field" : '{{ name }}'
+                },
+                init : {
+                    FilesAdded: function(up, files) {
+                        up.start();
+                        startFunction{{ name }}();
+                    },
+
+                    FileUploaded: function (up, files, response)
+                    {
+                        callbackFunction{{ name }}(response);
+                    }
+                }
+            });
+
+            uploader{{ name }}.init();
+        });
+    </script>
+{% endblock %}
