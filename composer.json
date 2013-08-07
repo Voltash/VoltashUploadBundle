@@ -1,5 +1,5 @@
 {
-    "name": "Voltash/UploadBundle",
+    "name": "voltash/upload-bundle",
     "description": "File upload bundle for Symfony2",
     "keywords": ["uploadbundle", "voltash"],
     "homepage": "http://elert.ru",
@@ -19,6 +19,7 @@
     "autoload": {
     "psr-0": { "Voltash\\UploadBundle": "" }
 },
+    "target-dir": "Voltash/UploadBundle",
     "extra": {
     "branch-alias": {
         "dev-master": "2.2.x-dev"
