@@ -22,6 +22,7 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
+                ->scalarNode('web_dir')->end()
                 ->arrayNode('types')
                     ->prototype('array')
                         ->children()

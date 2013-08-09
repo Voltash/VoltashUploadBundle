@@ -22,6 +22,7 @@ class UploadController extends Controller
         if ($uploadFile->isValid()) {
             $filesConfig = $this->container->getParameter('file_upload.types');
             $fileSettings = $filesConfig[$request->get('type', 'default')];
+            $siteWebDir = $this->container->getParameter('file_upload.web_dir');
             $sessionAttr = $request->get('field');
 
             $validator = $this->getFileValidator($fileSettings);
@@ -29,7 +30,7 @@ class UploadController extends Controller
             $errorList = $this->get('validator')->validateValue($uploadFile, $validator);
 
             if (count($errorList) == 0) {
-                $uploadDir = $this->get('kernel')->getRootDir() . '/../public_html' . $fileSettings['upload_dir'];
+                $uploadDir = $this->get('kernel')->getRootDir() . '/../'.$siteWebDir . $fileSettings['upload_dir'];
                 if (!is_dir($uploadDir)) {
                     mkdir($uploadDir, 0777, true);
                 }
