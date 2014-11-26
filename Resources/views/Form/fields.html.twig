@@ -15,7 +15,7 @@
                 container: 'container_{{ name }}',
                 max_file_size : '10mb',
                 url : '{{ path('file_upload_upload') }}',
-                multi_selection: false,
+                multi_selection: true,
                 flash_swf_url : '{{ asset('bundles/fileupload/swf/plupload.flash.swf') }}',
                 silverlight_xap_url : '{{ asset('bundles/fileupload/swf/plupload.silverlight.xap') }}',
                 filters : [
@@ -26,6 +26,13 @@
                     "field" : '{{ name }}'
                 },
                 init : {
+
+                    /*FilesAdded: function(up, files) {
+                        plupload.each(files, function(file) {
+                            $('filelist').innerHTML += '<div id="' + file.id + '">' + file.name + ' (' + plupload.formatSize(file.size) + ') <b></b></div>';
+                        });
+                    },*/
+
                     FilesAdded: function(up, files) {
                         up.start();
                         startFunction{{ name }}();
@@ -34,6 +41,11 @@
                     FileUploaded: function (up, files, response)
                     {
                         callbackFunction{{ name }}(response);
+                    },
+
+                    UploadComplete: function  ()
+                    {
+                        finalFunction{{ name }}();
                     }
                 }
             });

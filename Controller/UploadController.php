@@ -42,11 +42,15 @@ class UploadController extends Controller
                 $fileObj->extension = $uploadFile->getClientOriginalExtension();
 
 
-                $fileCollection = new \SplObjectStorage();
-                $fileCollection->type = $request->get('type', 'default');
-                $fileCollection->attach($fileObj);
+                $filesInfo = new \SplObjectStorage();
+                if ($this->get('session')->has('file_upload_' . $sessionAttr)) {
+                    $filesInfo->unserialize($this->get('session')->get('file_upload_' . $sessionAttr));
+                }
+                $filesInfo->type = $request->get('type', 'default');
+                $filesInfo->attach($fileObj);
 
-                $this->get('session')->set('file_upload_' . $sessionAttr, $fileCollection->serialize());
+                $this->get('session')->set('file_upload_' . $sessionAttr, $filesInfo->serialize());
+
                 $data = array(
                     'success' => true,
                     'file' => $fileSettings['upload_dir'] . '/' . $fileName,
