@@ -15,48 +15,50 @@ class UploadController extends Controller
         //TODO make multiple file upload
 
         $request = $this->getRequest();
-        $uploadFile = $request->files->get('file');
-
+        $this->uploadFile = $request->files->get('file');
+        if (is_null($this->uploadFile)) {
+            die('File not found!');
+        }
         $data = array('success' => false, 'error' => 'Upload Error');
+        $this->userToken = $request->get('token');
+        $this->sessionToken = $this->get('session')->get('token');
 
-        if ($uploadFile->isValid()) {
+        if ($this->uploadFile->isValid() && ($this->userToken === $this->sessionToken))
+        {
             $filesConfig = $this->container->getParameter('file_upload.types');
             $fileSettings = $filesConfig[$request->get('type', 'default')];
-            $siteWebDir = $this->container->getParameter('file_upload.web_dir');
             $sessionAttr = $request->get('field');
 
             $validator = $this->getFileValidator($fileSettings);
+            if (!$validator) {
+                $data = array('success' => false, 'error' => 'Ваш IP добавлен. В течении следующего часа с Вами свяжутся / Your IP added within. You will be contacted the next hour');
 
-            $errorList = $this->get('validator')->validateValue($uploadFile, $validator);
+                return new JsonResponse($data);
+            }
+            $errorList = $this->get('validator')->validateValue($this->uploadFile, $validator);
 
-            if (count($errorList) == 0) {
-                $uploadDir = $this->get('kernel')->getRootDir() . '/../'.$siteWebDir . $fileSettings['upload_dir'];
-                if (!is_dir($uploadDir)) {
+            if (count($errorList) == 0)
+            {
+                $uploadDir = $this->get('kernel')->getRootDir() . '/../public_html'.$fileSettings['upload_dir'];
+                if (!is_dir($uploadDir))
                     mkdir($uploadDir, 0777, true);
-                }
-                $fileName = 'img' . uniqid() . '.' . $uploadFile->getClientOriginalExtension();
-                $uploadFile->move($uploadDir, $fileName);
+                $fileName = 'img'.uniqid().'.'.$this->uploadFile->getClientOriginalExtension();
+                $this->uploadFile->move($uploadDir, $fileName);
 
                 $fileObj = new \stdClass();
-                $fileObj->path = $uploadDir . '/' . $fileName;
-                $fileObj->extension = $uploadFile->getClientOriginalExtension();
+                $fileObj->path =  $uploadDir.'/'.$fileName;
+                $fileObj->extension = $this->uploadFile->getClientOriginalExtension();
 
 
-                $filesInfo = new \SplObjectStorage();
-                if ($this->get('session')->has('file_upload_' . $sessionAttr)) {
-                    $filesInfo->unserialize($this->get('session')->get('file_upload_' . $sessionAttr));
-                }
-                $filesInfo->type = $request->get('type', 'default');
-                $filesInfo->attach($fileObj);
+                $fileCollection = new \SplObjectStorage();
+                $fileCollection->type = $request->get('type', 'default');
+                $fileCollection->attach($fileObj);
 
-                $this->get('session')->set('file_upload_' . $sessionAttr, $filesInfo->serialize());
-
-                $data = array(
-                    'success' => true,
-                    'file' => $fileSettings['upload_dir'] . '/' . $fileName,
-                    'name' => $uploadFile->getClientOriginalName()
-                );
-            } else {
+                $this->get('session')->set('file_upload_'.$sessionAttr, $fileCollection->serialize());
+                $data = array('success' => true, 'file' => $fileSettings['upload_dir'].'/'.$fileName, 'name' => $this->uploadFile->getClientOriginalName());
+            }
+            else
+            {
                 $data = array('success' => false, 'error' => $errorList[0]->getMessage());
             }
 
@@ -70,18 +72,30 @@ class UploadController extends Controller
     {
         $fileConstraint = null;
 
-        if ($settings['type'] == 'file') {
+        $formats = explode(",", $settings['format']);
+        $match = false;
+
+        foreach ($formats as $format) {
+            if (strtolower($format) == $this->uploadFile->getClientOriginalExtension())
+                $match = true;
+        }
+        if ( !$match )
+            return false;
+
+        if ($settings['type'] == 'file')
+        {
             $fileConstraint = new File();
             $fileConstraint->maxSize = $settings['max_size'];
             $fileConstraint->mimeTypes = $settings['mime_type'];
-        } elseif ($settings['type'] == 'image') {
+        }
+        elseif ($settings['type'] == 'image')
+        {
             $fileConstraint = new Image();
             $fileConstraint->maxSize = $settings['max_size'];
         }
 
-        if (is_null($fileConstraint)) {
+        if (is_null($fileConstraint))
             throw new \Exception(' Not Found file type in config !');
-        }
 
         return $fileConstraint;
 

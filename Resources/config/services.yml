@@ -16,3 +16,9 @@ services:
     file_upload.handler:
         class: Voltash\UploadBundle\Services\FileHandler
         arguments: [@session, %file_upload.types%]
+
+    file_upload.form.type:
+        class: Voltash\UploadBundle\Form\FileUploadType
+        arguments: [@form.csrf_provider, @session]
+        tags:
+            - { name: form.type, alias: 'file_upload_type' }

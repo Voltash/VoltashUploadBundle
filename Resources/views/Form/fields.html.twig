@@ -1,6 +1,6 @@
 {% extends 'form_div_layout.html.twig' %}
 
-{% block fileUpload_widget %}
+{% block file_upload_type_widget %}
     {% set type = type|default('hidden') %}
     <input type="{{ type }}" {{ block('widget_attributes') }} value="{{ value }}" class="file_upload_field" />
 
@@ -15,7 +15,7 @@
                 container: 'container_{{ name }}',
                 max_file_size : '10mb',
                 url : '{{ path('file_upload_upload') }}',
-                multi_selection: true,
+                multi_selection: {{ multi_selection }},
                 flash_swf_url : '{{ asset('bundles/fileupload/swf/plupload.flash.swf') }}',
                 silverlight_xap_url : '{{ asset('bundles/fileupload/swf/plupload.silverlight.xap') }}',
                 filters : [
